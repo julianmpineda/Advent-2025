@@ -23,14 +23,31 @@ public class day01 {
 
         int pos = 50;
         int pass = 0;
+        int point = 0;
 
         for (int i = 0; i < turns.size(); i++) {
-            pos += turns.get(i)[1] * turns.get(i)[0];
-            pos %= 100;
 
+            boolean posFlag = pos == 0;
+            int clicks = turns.get(i)[1];
+            
+            while (clicks > 100) {
+                point++;
+                clicks -= 100;
+            }
+
+            pos += clicks * turns.get(i)[0];
+            
+            int posHold = pos;
+            
+            pos = (pos + 100) % 100;
             pass += pos == 0 ? 1 : 0;
-        }
 
+            if (!posFlag) {
+                point += pos == posHold || posHold == 100 ? 0 : 1;
+            }
+        }
+        
         System.out.println("Part 1: " + pass);
+        System.out.println("Part 2: " + (pass + point));
     }
 }
