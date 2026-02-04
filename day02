@@ -1,0 +1,68 @@
+/*
+  Bit of a brute force method, creates every possible "half"
+  and checks whether it's in range.
+*/
+
+import java.io.*;
+import java.util.*;
+
+public class day02 {
+    public static void main(String[] args) {
+
+        List<String> ranges = new ArrayList<>();
+
+        // Not sure if needed since given as a single line. Hardcode?
+
+        try {
+            File myObj = new File("src/data/data02.txt");
+            Scanner myReader = new Scanner(myObj);
+            myReader.useDelimiter(",");
+
+            while (myReader.hasNext()) {
+                ranges.add(myReader.next());
+            }
+
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        long invalid = 0;
+
+        /* Have converted a lot of the ranges to both string
+           and long, but I don't think I acutally use all of them
+           multiple times or in any meaningful way. Good potential
+           to trim out and simplfy code here.
+        */
+
+        for (int i = 0; i < ranges.size(); i++) {
+            String[] rangeStr = ranges.get(i).split("-");
+            long start = Long.parseLong(rangeStr[0]);
+            long end = Long.parseLong(rangeStr[1]);
+
+            int sLen = rangeStr[0].length();
+            int eLen = rangeStr[1].length();
+
+            if (sLen % 2 != 0 && sLen == eLen) {
+                continue;
+            } else {
+                int half = sLen/2 <= 1 ? 1 : sLen/2;
+                String testStr = rangeStr[0].substring(0, half);
+                System.out.println(testStr);
+                long halfLong = Long.parseLong(testStr);
+                testStr += testStr;
+
+                while (Long.parseLong(testStr) <= end) {
+                    long testLong = Long.parseLong(testStr);
+
+                    if (testLong >= start) {
+                        invalid += Long.parseLong(testStr);
+                    }
+                    halfLong++;
+                    testStr = halfLong + "" + halfLong;
+                }
+            }
+        }
+        System.out.println("Part 1: " + invalid);
+    }
+}
