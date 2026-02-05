@@ -27,13 +27,13 @@ public class day02 {
             e.printStackTrace();
         }
 
-        long invalid = 0;
+        //System.out.println("Part 1: " + partOne(ranges));
+        System.out.println("Part 2: " + partTwo(ranges));
+    }
 
-        /* Have converted a lot of the ranges to both string
-           and long, but I don't think I acutally use all of them
-           multiple times or in any meaningful way. Good potential
-           to trim out and simplfy code here.
-        */
+    private static long partOne(List<String> ranges) {
+
+        long invalid = 0;
 
         for (int i = 0; i < ranges.size(); i++) {
             String[] rangeStr = ranges.get(i).split("-");
@@ -63,6 +63,36 @@ public class day02 {
                 }
             }
         }
-        System.out.println("Part 1: " + invalid);
+        return invalid;
+    }
+    private static long partTwo(List<String> ranges) {
+
+        long begin = Long.MAX_VALUE;
+        long last = 0;
+
+        for (int i = 0; i < ranges.size(); i++) {
+            String[] rangeStr = ranges.get(i).split("-");
+            begin = Long.min(begin, Long.parseLong(rangeStr[0]));
+            last = Long.max(last, Long.parseLong(rangeStr[1]));
+        }
+
+        long invalid = 0;
+        System.out.println(begin);
+        System.out.println(last);
+        Set<Long> checked = new HashSet<>();
+        String testStr = "11";
+
+        for (int i = 0; i < ranges.size(); i++) {
+            String[] rangeStr = ranges.get(i).split("-");
+            //if (testStr > start && testStr < end) {
+            //  invalid += Long.parseLong(testStr);
+            // break;
+            //} else if (testStr < end && ){
+
+            //}
+        }
+
+
+        return invalid;
     }
 }
