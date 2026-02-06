@@ -1,8 +1,3 @@
-/*
-  Bit of a brute force method, creates every possible "half"
-  and checks whether it's in range.
-*/
-
 import java.io.*;
 import java.util.*;
 
@@ -27,7 +22,7 @@ public class day02 {
             e.printStackTrace();
         }
 
-        //System.out.println("Part 1: " + partOne(ranges));
+        System.out.println("Part 1: " + partOne(ranges));
         System.out.println("Part 2: " + partTwo(ranges));
     }
 
@@ -44,11 +39,13 @@ public class day02 {
             int eLen = rangeStr[1].length();
 
             if (sLen % 2 != 0 && sLen == eLen) {
-                continue;
+                /*
+                Don't do anything, all numbers in range have odd length
+                so no doubled numbers can exist in the range.
+                */
             } else {
-                int half = sLen/2 <= 1 ? 1 : sLen/2;
+                int half = sLen / 2 <= 1 ? 1 : sLen / 2;
                 String testStr = rangeStr[0].substring(0, half);
-                System.out.println(testStr);
                 long halfLong = Long.parseLong(testStr);
                 testStr += testStr;
 
@@ -65,34 +62,49 @@ public class day02 {
         }
         return invalid;
     }
+
     private static long partTwo(List<String> ranges) {
 
-        long begin = Long.MAX_VALUE;
         long last = 0;
+        List<String[]> rangeStr = new ArrayList<>();
 
         for (int i = 0; i < ranges.size(); i++) {
-            String[] rangeStr = ranges.get(i).split("-");
-            begin = Long.min(begin, Long.parseLong(rangeStr[0]));
-            last = Long.max(last, Long.parseLong(rangeStr[1]));
+            rangeStr.add(ranges.get(i).split("-"));
+            last = Long.max(last, Long.parseLong(rangeStr.get(i)[1]));
         }
 
+        int len = ("" + last).length();
         long invalid = 0;
-        System.out.println(begin);
-        System.out.println(last);
-        Set<Long> checked = new HashSet<>();
-        String testStr = "11";
+        long holdLong = 1;
 
-        for (int i = 0; i < ranges.size(); i++) {
-            String[] rangeStr = ranges.get(i).split("-");
-            //if (testStr > start && testStr < end) {
-            //  invalid += Long.parseLong(testStr);
-            // break;
-            //} else if (testStr < end && ){
+        Set<String> checked = new HashSet<>();
 
-            //}
+        while (("" + holdLong).length() <= len / 2) {
+
+            String testStr = holdLong + "" + holdLong;
+            long testLong = Long.parseLong(testStr);
+
+            while (testLong <= last) {
+
+                testLong = Long.parseLong(testStr);
+
+                if (!checked.contains(testStr)) {
+
+                    for (int i = 0; i < rangeStr.size(); i++) {
+                        long start = Long.parseLong(rangeStr.get(i)[0]);
+                        long end = Long.parseLong(rangeStr.get(i)[1]);
+                        
+                        if (testLong >= start && testLong <= end) {
+                            invalid += testLong;
+                            break;
+                        }
+                    }
+                    checked.add(testStr);
+                }
+                testStr += holdLong;
+            }
+            holdLong++;
         }
-
-
         return invalid;
     }
 }
