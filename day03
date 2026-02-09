@@ -1,0 +1,47 @@
+import java.io.*;
+import java.util.*;
+
+public class day03 {
+    public static void main(String[] args) {
+
+        List<String> batteries = new ArrayList<>();
+
+        try {
+            File myObj = new File("src/data/data03.txt");
+            Scanner myReader = new Scanner(myObj);
+            myReader.useDelimiter(",");
+
+            while (myReader.hasNextLine()) {
+                batteries.add(myReader.nextLine());
+            }
+
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        int totalJoltage = 0;
+
+        for (int i = 0; i < batteries.size(); i++) {
+
+            int maxJolt = 0;
+            String batt = batteries.get(i);
+
+            for (int j = 0; j < batt.length(); j++) {
+
+                StringBuilder joltage = new StringBuilder();
+                joltage.append(batt.charAt(j));
+
+                for (int k = j + 1; k < batt.length(); k++) {
+                    joltage.append(batt.charAt(k));
+                    maxJolt = Math.max(Integer.parseInt(joltage.toString()), maxJolt);
+                    joltage.deleteCharAt(1);
+                }
+            }
+          
+            totalJoltage += maxJolt;
+        }
+
+        System.out.println("Part 1: " + totalJoltage);
+    }
+}
