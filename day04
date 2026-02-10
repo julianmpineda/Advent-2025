@@ -1,0 +1,86 @@
+import java.io.*;
+import java.util.*;
+
+public class day04 {
+    public static void main(String[] args) {
+
+        List<String> map = new ArrayList<>();
+
+        try {
+            File myObj = new File("src/data/data04.txt");
+            Scanner myReader = new Scanner(myObj);
+            myReader.useDelimiter(",");
+
+            while (myReader.hasNextLine()) {
+                map.add(myReader.nextLine());
+            }
+
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        final long startTime = System.currentTimeMillis();
+
+        int width = map.get(0).length();
+        int height = map.size();
+        int[][] intMap = new int[height][width];
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                intMap[i][j] = map.get(i).charAt(j) == '@' ? 1 : 0;
+            }
+        }
+
+        int freeRolls = 0;
+
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                int roll = 0;
+
+                if (intMap[row][col] == 1) {
+
+                    if (row > 0) {
+                        if (col > 0) {
+                            roll += intMap[row - 1][col - 1];
+                        }
+
+                        roll += intMap[row - 1][col];
+
+                        if (col < width - 1) {
+                            roll += intMap[row - 1][col + 1];
+                        }
+                    }
+
+                    if (col > 0) {
+                        roll += intMap[row][col - 1];
+                    }
+                    
+                    if (col < width - 1) {
+                        roll += intMap[row][col + 1];
+                    }
+
+                    if (row < height - 1) {
+                        if (col > 0) {
+                            roll += intMap[row + 1][col - 1];
+                        }
+
+                        roll += intMap[row + 1][col];
+
+                        if (col < width - 1) {
+                            roll += intMap[row + 1][col + 1];
+                        }
+                    }
+
+                    if (roll < 4) {
+                        freeRolls++;
+                    }
+                }
+
+            }
+        }
+
+        System.out.println("Part 1: " + freeRolls);
+        System.out.println(System.currentTimeMillis() - startTime + "ms");
+    }
+}
