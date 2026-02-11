@@ -2,6 +2,9 @@ import java.io.*;
 import java.util.*;
 
 public class day04 {
+    private static int height;
+    private static int width;
+
     public static void main(String[] args) {
 
         List<String> map = new ArrayList<>();
@@ -14,16 +17,14 @@ public class day04 {
             while (myReader.hasNextLine()) {
                 map.add(myReader.nextLine());
             }
-
             myReader.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
         final long startTime = System.currentTimeMillis();
-
-        int width = map.get(0).length();
-        int height = map.size();
+        height = map.size();
+        width = map.get(0).length();
         int[][] intMap = new int[height][width];
 
         for (int i = 0; i < height; i++) {
@@ -32,14 +33,33 @@ public class day04 {
             }
         }
 
-        int freeRolls = 0;
+        List<int[]> freeRolls = rollCount(intMap);
+        int count = freeRolls.size();
+
+        System.out.println("Part 1: " + count);
+
+        while (freeRolls.size() > 0) {
+            for (int s = 0; s < freeRolls.size(); s++) {
+                intMap[freeRolls.get(s)[0]][freeRolls.get(s)[1]] = 0;
+            }
+
+            freeRolls = rollCount(intMap);
+            count += freeRolls.size();
+        }
+
+        System.out.println("Part 2: " + count);
+        System.out.println(System.currentTimeMillis() - startTime + "ms");
+    }
+
+    private static List<int[]> rollCount(int[][] intMap) {
+        List<int[]> freeRolls = new ArrayList<>();
 
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 int roll = 0;
 
                 if (intMap[row][col] == 1) {
-
+                    // if top row, skip
                     if (row > 0) {
                         if (col > 0) {
                             roll += intMap[row - 1][col - 1];
@@ -52,14 +72,17 @@ public class day04 {
                         }
                     }
 
+                    // if first in column, skip
                     if (col > 0) {
                         roll += intMap[row][col - 1];
                     }
-                    
+
+                    // if last in column, skip
                     if (col < width - 1) {
                         roll += intMap[row][col + 1];
                     }
 
+                    // if last row, skip
                     if (row < height - 1) {
                         if (col > 0) {
                             roll += intMap[row + 1][col - 1];
@@ -73,14 +96,13 @@ public class day04 {
                     }
 
                     if (roll < 4) {
-                        freeRolls++;
+                        freeRolls.add(new int[]{row, col});
                     }
                 }
-
             }
         }
-
-        System.out.println("Part 1: " + freeRolls);
-        System.out.println(System.currentTimeMillis() - startTime + "ms");
+        return freeRolls;
     }
 }
+
+
