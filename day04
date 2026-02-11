@@ -12,11 +12,11 @@ public class day04 {
         try {
             File myObj = new File("src/data/data04.txt");
             Scanner myReader = new Scanner(myObj);
-            myReader.useDelimiter(",");
 
             while (myReader.hasNextLine()) {
                 map.add(myReader.nextLine());
             }
+
             myReader.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
