@@ -1,0 +1,57 @@
+import java.io.*;
+import java.util.*;
+
+public class day05 {
+    public static void main(String[] args) {
+        
+        List<long[]> ranges = new ArrayList<>();
+        List<Long> idList = new ArrayList<>();
+
+        try {
+            File myObj = new File("src/data/data05.txt");
+            Scanner myReader = new Scanner(myObj);
+
+            while (myReader.hasNextLine()) {
+                String line = myReader.nextLine();
+                
+                if (line.equals("")) {
+                    break;
+                }
+                
+                String[] rSplit = line.split("-");
+                long x = Long.parseLong(rSplit[0]);
+                long y = Long.parseLong(rSplit[1]);
+                ranges.add(new long[]{x, y});
+            }
+
+            while (myReader.hasNextLine()) {
+                String line = myReader.nextLine();
+                idList.add(Long.parseLong(line));
+            }
+
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        final long startTime = System.currentTimeMillis();
+        long count = 0;
+
+        for (int i = 0; i < idList.size(); i++) {
+            long id = idList.get(i);
+
+            for (int j = 0; j < ranges.size(); j++) {
+                long start = ranges.get(j)[0];
+                long end = ranges.get(j)[1];
+
+                if (id >= start && id <= end) {
+                    count++;
+                    break;
+                }
+            }
+        }
+
+        System.out.println("Part 1: " + count);
+        System.out.println((System.currentTimeMillis() - startTime) + "ms");
+    }
+}
