@@ -1,0 +1,51 @@
+import java.io.*;
+import java.util.*;
+
+public class day06 {
+    public static void main(String[] args) {
+
+        List<String[]> homework = new ArrayList<>();
+
+        try {
+            File myObj = new File("src/data/data06.txt");
+            Scanner myReader = new Scanner(myObj);
+
+            while (myReader.hasNextLine()) {
+                String problem = myReader.nextLine().trim();
+                String[] prArr = problem.split(" {1,}");
+                homework.add(prArr);
+            }
+
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        final long startTime = System.currentTimeMillis();
+        long total = 0;
+        int hwLength = homework.get(0).length;
+        int hwDepth = homework.size() - 1;
+
+        for (int i = 0; i < hwLength; i++) {
+
+            String[] eq = new String[hwDepth + 1];
+            for (int j = 0; j <= hwDepth; j++) {
+                eq[j] = homework.get(j)[i];
+            }
+
+            Long answer = Long.parseLong(eq[0]);
+            String sign = eq[eq.length - 1];
+
+            for (int k = 1; k < hwDepth; k++) {
+                if (sign.equals("+")) {
+                    answer += Integer.parseInt(eq[k]);
+                } else if (sign.equals("*")) {
+                    answer *= Integer.parseInt(eq[k]);
+                }
+            }
+            total += answer;
+        }
+        System.out.println("Part 1: " + total);
+        System.out.println(System.currentTimeMillis() - startTime + "ms");
+    }
+}
