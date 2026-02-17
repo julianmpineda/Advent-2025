@@ -4,16 +4,18 @@ import java.util.*;
 public class day06 {
     public static void main(String[] args) {
 
-        List<String[]> homework = new ArrayList<>();
+        List<String> homework = new ArrayList<>();
+        List<String[]> hwArr = new ArrayList<>();
 
         try {
             File myObj = new File("src/data/data06.txt");
             Scanner myReader = new Scanner(myObj);
 
             while (myReader.hasNextLine()) {
-                String problem = myReader.nextLine().trim();
-                String[] prArr = problem.split(" {1,}");
-                homework.add(prArr);
+                String problem = myReader.nextLine();
+                homework.add(problem);
+                String[] prArr = problem.trim().split(" {1,}");
+                hwArr.add(prArr);
             }
 
             myReader.close();
@@ -21,16 +23,18 @@ public class day06 {
             e.printStackTrace();
         }
 
+        // Part 1 Start
+
         final long startTime = System.currentTimeMillis();
         long total = 0;
-        int hwLength = homework.get(0).length;
+        int hwArrLen = hwArr.get(0).length;
         int hwDepth = homework.size() - 1;
 
-        for (int i = 0; i < hwLength; i++) {
+        for (int i = 0; i < hwArrLen; i++) {
 
             String[] eq = new String[hwDepth + 1];
             for (int j = 0; j <= hwDepth; j++) {
-                eq[j] = homework.get(j)[i];
+                eq[j] = hwArr.get(j)[i];
             }
 
             Long answer = Long.parseLong(eq[0]);
@@ -47,5 +51,66 @@ public class day06 {
         }
         System.out.println("Part 1: " + total);
         System.out.println(System.currentTimeMillis() - startTime + "ms");
+
+        // Part 2 Start
+
+        long p2Time = System.currentTimeMillis();
+        int hwMax = Math.max(Math.max(homework.get(0).length(), homework.get(1).length()),
+                Math.max(homework.get(2).length(), homework.get(3).length()));
+
+        // Pads the end of lines with spaces to make sure each line matches.
+
+        for (int x = 0; x < 4; x++) {
+            String temp = homework.get(x);
+            while (temp.length() < hwMax) {
+                temp += " ";
+            }
+            homework.set(x, temp);
+        }
+
+        total = 0;
+        int count = 0;
+
+        /* 
+           Uses hrArr from Part 1 to make sure it runs the correct number of times,
+           and also finds the number length for each "problem". Cheats a little as
+           it uses the knowledge of how many lines are in the file. If the number length
+           was unknown, would need to replace the hard numbers with loops.
+        */
+
+        for (int r = 0; r < hwArrLen; r++) {
+            int intMax = Math.max(Math.max(hwArr.get(0)[r].length(), hwArr.get(1)[r].length()),
+                    Math.max(hwArr.get(2)[r].length(), hwArr.get(3)[r].length()));
+
+            String sign = hwArr.get(4)[r];
+            
+            /*
+             Again cheats with knowledge that each number is at most 4. If initialized with a number,
+             need a loop to set it to blank instead of null.
+            */
+            String[] numStr = new String[]{"", "", "", ""};
+
+            for (int s = 0; s < intMax; s++) {
+                for (int t = 0; t < hwDepth; t++) {
+                    numStr[s] += homework.get(t).charAt(count + s);
+                }
+            }
+
+            count += intMax + 1;
+            long answer = Long.parseLong(numStr[0].trim());
+
+            for (int u = 1; u < intMax; u++) {
+                if (sign.equals("+")) {
+                    answer += Integer.parseInt(numStr[u].trim());
+                } else if (sign.equals("*")) {
+                    answer *= Integer.parseInt(numStr[u].trim());
+                }
+            }
+
+            total += answer;
+        }
+
+        System.out.println("Part 2: " + total);
+        System.out.println(System.currentTimeMillis() - p2Time + "ms");
     }
 }
