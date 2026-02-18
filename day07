@@ -1,0 +1,54 @@
+import java.io.*;
+import java.util.*;
+
+public class day07 {
+    public static void main(String[] args) {
+
+        List<String> manifold = new ArrayList<>();
+
+        try {
+            File myObj = new File("src/data/data07.txt");
+            Scanner myReader = new Scanner(myObj);
+
+            while (myReader.hasNextLine()) {
+                manifold.add(myReader.nextLine());
+            }
+
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        final long startTime = System.currentTimeMillis();
+        Set<Integer> beams = new HashSet<>();
+
+        beams.add(manifold.get(0).indexOf('S'));
+        int total = 0;
+
+        for (int i = 1; i < manifold.size(); i++) {
+            HashSet<Integer> split = new HashSet<>();
+            HashSet<Integer> remove = new HashSet<>();
+            String level = manifold.get(i);
+
+            for (int b : beams) {
+                if (level.charAt(b) == '^') {
+                    total++;
+                    remove.add(b);
+                    split.add(b-1);
+                    split.add(b+1);
+                }
+            }
+
+            for (int r : remove) {
+                beams.remove(r);
+            }
+
+            for (int s : split) {
+                beams.add(s);
+            }
+        }
+
+        System.out.println("Part 1: " + total);
+        System.out.println(System.currentTimeMillis() - startTime + "ms");
+    }
+}
