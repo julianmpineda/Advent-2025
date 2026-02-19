@@ -20,22 +20,30 @@ public class day07 {
         }
 
         final long startTime = System.currentTimeMillis();
-        Set<Integer> beams = new HashSet<>();
 
+        Set<Integer> beams = new HashSet<>();
         beams.add(manifold.get(0).indexOf('S'));
-        int total = 0;
+
+        long[] arr = new long[manifold.get(0).length()];
+        arr[manifold.get(0).indexOf('S')] = 1;
+
+        int count = 0;
 
         for (int i = 1; i < manifold.size(); i++) {
+
             HashSet<Integer> split = new HashSet<>();
             HashSet<Integer> remove = new HashSet<>();
             String level = manifold.get(i);
 
             for (int b : beams) {
                 if (level.charAt(b) == '^') {
-                    total++;
+                    count++;
                     remove.add(b);
-                    split.add(b-1);
-                    split.add(b+1);
+                    split.add(b - 1);
+                    split.add(b + 1);
+                    arr[b + 1] += arr[b];
+                    arr[b - 1] += arr[b];
+                    arr[b] = 0;
                 }
             }
 
@@ -48,7 +56,13 @@ public class day07 {
             }
         }
 
-        System.out.println("Part 1: " + total);
+        long total = 0;
+        for (long s : arr) {
+            total += s;
+        }
+
+        System.out.println("Part 1: " + count);
+        System.out.println("Part 2: " + total);
         System.out.println(System.currentTimeMillis() - startTime + "ms");
     }
 }
