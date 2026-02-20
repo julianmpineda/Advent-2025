@@ -1,0 +1,88 @@
+import java.io.*;
+import java.util.*;
+
+public class day08 {
+    public static void main(String[] args) {
+
+        List<String[]> list = new ArrayList<>();
+
+        try {
+            File myObj = new File("src/data/data08.txt");
+            Scanner myReader = new Scanner(myObj);
+
+            while (myReader.hasNextLine()) {
+                list.add(myReader.nextLine().split(","));
+            }
+
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        final long startTime = System.currentTimeMillis();
+
+        Map<Integer, int[]> boxes = new HashMap<>();
+
+        for (int i = 0; i < list.size(); i++) {
+            int x = Integer.parseInt(list.get(i)[0]);
+            int y = Integer.parseInt(list.get(i)[1]);
+            int z = Integer.parseInt(list.get(i)[2]);
+            boxes.put(i, new int[]{x, y, z});
+        }
+        Map<Double, String> distMap = new HashMap<>();
+        ArrayList<Double> distances = new ArrayList<>();
+
+
+        for (int j = 0; j < boxes.size(); j++) {
+            for (int k = j+1; k < boxes.size(); k++) {
+                double dist = distance(boxes.get(j), boxes.get(k));
+                distMap.put(dist, int2Str(j, k));
+                distances.add(dist);
+            }
+        }
+
+        Collections.sort(distances);
+        Map<Integer, ArrayList<Integer>> circuits = new HashMap<>();
+
+        for (int k = 0; k < 10; k++) {
+            String link = distMap.get(distances.get(k));
+            int[] pq = str2int(link);
+            circuits.putIfAbsent(pq[0], new ArrayList<>());
+            circuits.putIfAbsent(pq[1], new ArrayList<>());
+            circuits.get(pq[0]).add(pq[1]);
+            circuits.get(pq[1]).add(pq[0]);
+            System.out.println("connecting box " + (pq[0] + 1) + " and " + ( 1 + pq[1]));
+
+        }
+
+        for (int l : circuits.keySet()) {
+            System.out.print(l + ": ");
+            for (int s : circuits.get(l)) {
+                System.out.print(s + ", ");
+            }
+            System.out.println();
+        }
+
+    }
+    private static double distance(int[] p, int[] q) {
+        // d(p,q)= sqrt((p1-q1)^2+(p2-q2)^2+(p3-q3)^2)
+        double pq1 = Math.pow((p[0] - q[0]), 2);
+        double pq2 = Math.pow((p[1] - q[1]), 2);
+        double pq3 = Math.pow((p[2] - q[2]), 2);
+        return Math.sqrt(pq1 + pq2 + pq3);
+    }
+    private static String int2Str(int o, int t) {
+        StringBuilder id = new StringBuilder();
+        id.append(o);
+        id.append('-');
+        id.append(t);
+        return id.toString();
+    }
+    private static int[] str2int(String s) {
+        String[] str = s.split("-");
+        int x = Integer.parseInt(str[0]);
+        int y = Integer.parseInt(str[1]);
+        return new int[]{x, y};
+    }
+
+}
