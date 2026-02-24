@@ -32,7 +32,6 @@ public class day08 {
         Map<Double, String> distMap = new HashMap<>();
         ArrayList<Double> distances = new ArrayList<>();
 
-
         for (int j = 0; j < boxes.size(); j++) {
             for (int k = j+1; k < boxes.size(); k++) {
                 double dist = distance(boxes.get(j), boxes.get(k));
@@ -42,26 +41,117 @@ public class day08 {
         }
 
         Collections.sort(distances);
-        Map<Integer, ArrayList<Integer>> circuits = new HashMap<>();
+        //Map<Integer, Set<Integer>> circuits = new HashMap<>();
+        Set<Set<Integer>> circuits = new HashSet<>();
 
-        for (int k = 0; k < 10; k++) {
+        /*
+        * Connects but has problems with new connections between old connections
+        * need to "chase" down connections
+        * new object entirely?
+        * linked list/tree?
+        */
+
+        for (int k = 0; k < 1000; k++) {
             String link = distMap.get(distances.get(k));
-            int[] pq = str2int(link);
-            circuits.putIfAbsent(pq[0], new ArrayList<>());
-            circuits.putIfAbsent(pq[1], new ArrayList<>());
-            circuits.get(pq[0]).add(pq[1]);
-            circuits.get(pq[1]).add(pq[0]);
-            System.out.println("connecting box " + (pq[0] + 1) + " and " + ( 1 + pq[1]));
+            int[] box = str2int(link);
+
+            /*
+            for (Set<Integer> c : circuits) {
+                if (c.contains(pq[0])) {
+                    c.add((pq[1]));
+                } else if (c.contains(pq[1])) {
+                    c.add((pq[0]));
+                }
+            }
+
+            circuits.putIfAbsent(box[0], new HashSet<>(box[0]));
+            circuits.putIfAbsent(box[1], new HashSet<>(box[1]));
+            circuits.get(box[0]).add(box[1]);
+            circuits.get(box[1]).add(box[0]);
+
+             */
+
+            int cont = 0;
+
+            Set<Set<Integer>> remove = new HashSet<>();
+            Set<Integer> merge = new HashSet<>();
+            for (Set s : circuits) {
+
+                if (box[0] == 2 && box[1] == 18) {
+                    int stop = 0;
+                }
+
+                if (s.contains(box[1]) || s.contains(box[0])) {
+                    merge.add(box[0]);
+                    merge.add(box[1]);
+                    merge.addAll(s);
+                    remove.add(s);
+                    cont = 1;
+                }
+            }
+
+            if (cont == 1) {
+                for (Set r : remove) {
+                    circuits.remove(r);
+                }
+                circuits.add(merge);
+            }
+
+            if (cont == 0) {
+                Set<Integer> tempSet = new HashSet<>();
+                tempSet.add(box[0]);
+                tempSet.add(box[1]);
+                circuits.add(tempSet);
+            }
+
+            //System.out.println("connecting box " + (box[0]) + " and " + (box[1]));
 
         }
+        System.out.println("end connecting");
 
-        for (int l : circuits.keySet()) {
-            System.out.print(l + ": ");
-            for (int s : circuits.get(l)) {
+        List<Integer> max = new ArrayList<>();
+
+        for (Set c : circuits) {
+            max.add(c.size());
+        }
+
+        /*
+        for (Set x : circuits) {
+            System.out.print("circuit : ");
+            for (Object s : x) {
                 System.out.print(s + ", ");
             }
             System.out.println();
         }
+
+         */
+
+        Collections.sort(max);
+        Collections.reverse(max);
+
+        /*
+        System.out.print("max: ");
+        for (int i : max) {
+            System.out.print(i + ", ");
+        }
+        System.out.println();
+
+         */
+        long maxmax = max.get(0) * max.get(1) * max.get(2);
+
+        /*
+        for (int l : circuits.keySet()) {
+            System.out.print((l+1) + ": ");
+            for (int s : circuits.get(l)) {
+                System.out.print((s+1) + ", ");
+            }
+            System.out.println();
+        }
+
+         */
+
+        System.out.println("Part 1: " + maxmax);
+        System.out.println(System.currentTimeMillis() - startTime + "ms");
 
     }
     private static double distance(int[] p, int[] q) {
@@ -83,6 +173,12 @@ public class day08 {
         int x = Integer.parseInt(str[0]);
         int y = Integer.parseInt(str[1]);
         return new int[]{x, y};
+    }
+
+    private static int chase() {
+        // chase down sets recursively to add? too much?
+
+        return 0;
     }
 
 }
