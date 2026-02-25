@@ -20,139 +20,100 @@ public class day08 {
         }
 
         final long startTime = System.currentTimeMillis();
-
-        Map<Integer, int[]> boxes = new HashMap<>();
+        Map<Integer, int[]> junctionBoxes = new HashMap<>();
 
         for (int i = 0; i < list.size(); i++) {
             int x = Integer.parseInt(list.get(i)[0]);
             int y = Integer.parseInt(list.get(i)[1]);
             int z = Integer.parseInt(list.get(i)[2]);
-            boxes.put(i, new int[]{x, y, z});
+            junctionBoxes.put(i, new int[]{x, y, z});
         }
+
         Map<Double, String> distMap = new HashMap<>();
         ArrayList<Double> distances = new ArrayList<>();
 
-        for (int j = 0; j < boxes.size(); j++) {
-            for (int k = j+1; k < boxes.size(); k++) {
-                double dist = distance(boxes.get(j), boxes.get(k));
+        for (int j = 0; j < junctionBoxes.size(); j++) {
+            for (int k = j+1; k < junctionBoxes.size(); k++) {
+                double dist = distance(junctionBoxes.get(j), junctionBoxes.get(k));
                 distMap.put(dist, int2Str(j, k));
                 distances.add(dist);
             }
         }
 
         Collections.sort(distances);
-        //Map<Integer, Set<Integer>> circuits = new HashMap<>();
+
         Set<Set<Integer>> circuits = new HashSet<>();
+        List<Integer> max = new ArrayList<>();
+        int part1 = 0;
+        long part2 = 0L;
 
         /*
-        * Connects but has problems with new connections between old connections
-        * need to "chase" down connections
-        * new object entirely?
-        * linked list/tree?
-        */
+         * Left as a for loop even though k should never reach
+         * distances.size() with proper data. A while loop
+         * could run forever if the input isn't correct
+         * so this creates a hard stop.
+         */
+        for (int k = 0; k < distances.size(); k++) {
 
-        for (int k = 0; k < 1000; k++) {
+            Set<Set<Integer>> removeList = new HashSet<>();
+            Set<Integer> merge = new HashSet<>();
             String link = distMap.get(distances.get(k));
             int[] box = str2int(link);
+            boolean found = false;
 
             /*
-            for (Set<Integer> c : circuits) {
-                if (c.contains(pq[0])) {
-                    c.add((pq[1]));
-                } else if (c.contains(pq[1])) {
-                    c.add((pq[0]));
-                }
-            }
-
-            circuits.putIfAbsent(box[0], new HashSet<>(box[0]));
-            circuits.putIfAbsent(box[1], new HashSet<>(box[1]));
-            circuits.get(box[0]).add(box[1]);
-            circuits.get(box[1]).add(box[0]);
-
+             * Searches all existing circuits for any connections to
+             * new box, and finds any circuits that need merging. Set
+             * object disallows duplicates letting us cut down on code.
              */
-
-            int cont = 0;
-
-            Set<Set<Integer>> remove = new HashSet<>();
-            Set<Integer> merge = new HashSet<>();
             for (Set s : circuits) {
-
-                if (box[0] == 2 && box[1] == 18) {
-                    int stop = 0;
-                }
-
                 if (s.contains(box[1]) || s.contains(box[0])) {
                     merge.add(box[0]);
                     merge.add(box[1]);
                     merge.addAll(s);
-                    remove.add(s);
-                    cont = 1;
+                    removeList.add(s);
+                    found = true;
                 }
             }
 
-            if (cont == 1) {
-                for (Set r : remove) {
-                    circuits.remove(r);
-                }
-                circuits.add(merge);
-            }
-
-            if (cont == 0) {
+            // Create new circuit if not found.
+            if (!found) {
                 Set<Integer> tempSet = new HashSet<>();
                 tempSet.add(box[0]);
                 tempSet.add(box[1]);
                 circuits.add(tempSet);
             }
 
-            //System.out.println("connecting box " + (box[0]) + " and " + (box[1]));
-
-        }
-        System.out.println("end connecting");
-
-        List<Integer> max = new ArrayList<>();
-
-        for (Set c : circuits) {
-            max.add(c.size());
-        }
-
-        /*
-        for (Set x : circuits) {
-            System.out.print("circuit : ");
-            for (Object s : x) {
-                System.out.print(s + ", ");
+            // If found, remove duplicate circuits and add merged circuit.
+            if (found) {
+                for (Set r : removeList) {
+                    circuits.remove(r);
+                }
+                circuits.add(merge);
             }
-            System.out.println();
-        }
 
-         */
-
-        Collections.sort(max);
-        Collections.reverse(max);
-
-        /*
-        System.out.print("max: ");
-        for (int i : max) {
-            System.out.print(i + ", ");
-        }
-        System.out.println();
-
-         */
-        long maxmax = max.get(0) * max.get(1) * max.get(2);
-
-        /*
-        for (int l : circuits.keySet()) {
-            System.out.print((l+1) + ": ");
-            for (int s : circuits.get(l)) {
-                System.out.print((s+1) + ", ");
+            // Solve for Part 1
+            if (k == 1000) {
+                for (Set c : circuits) {
+                    max.add(c.size());
+                }
+                Collections.sort(max);
+                Collections.reverse(max);
+                part1 = (max.get(0) * max.get(1) * max.get(2));
             }
-            System.out.println();
+
+            // merge.size() of 1000 means all junction boxes are connected
+            if (merge.size() == 1000) {
+                long x1 = (junctionBoxes.get(box[0])[0]);
+                long x2 = (junctionBoxes.get(box[1])[0]);
+                part2 = x1 * x2;
+                break;
+            }
         }
 
-         */
-
-        System.out.println("Part 1: " + maxmax);
+        System.out.println("Part 1: " + part1);
+        System.out.println("Part 2: " + part2);
         System.out.println(System.currentTimeMillis() - startTime + "ms");
-
     }
     private static double distance(int[] p, int[] q) {
         // d(p,q)= sqrt((p1-q1)^2+(p2-q2)^2+(p3-q3)^2)
@@ -174,11 +135,4 @@ public class day08 {
         int y = Integer.parseInt(str[1]);
         return new int[]{x, y};
     }
-
-    private static int chase() {
-        // chase down sets recursively to add? too much?
-
-        return 0;
-    }
-
 }
