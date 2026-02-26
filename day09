@@ -1,0 +1,57 @@
+import java.io.*;
+import java.util.*;
+
+public class day09 {
+    public static void main(String[] args) {
+
+        List<long[]> tiles = new ArrayList<>();
+
+        try {
+            File myObj = new File("src/data/data09.txt");
+            Scanner myReader = new Scanner(myObj);
+
+            while (myReader.hasNextLine()) {
+                String[] line = myReader.nextLine().split(",");
+                tiles.add(new long[]{Long.parseLong(line[0]), Long.parseLong(line[1])});
+            }
+
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        final long startTime = System.currentTimeMillis();
+        Map<String, Long> rectangles = new HashMap<>();
+        long max = Long.MIN_VALUE;
+
+        for (int i = 0; i < tiles.size(); i++) {
+            for (int j = i + 1; j < tiles.size(); j++) {
+                long x1 = tiles.get(i)[0];
+                long y1 = tiles.get(i)[1];
+                long x2 = tiles.get(j)[0];
+                long y2 = tiles.get(j)[1];
+
+                long area = (Math.abs(x2-x1) + 1) * (Math.abs(y1-y2) + 1);
+
+                rectangles.put(int2Str(i, j), area);
+                max = Math.max(area, max);
+            }
+        }
+
+
+        System.out.println("Part 1: " + max);
+    }
+    private static String int2Str(int o, int t) {
+        StringBuilder id = new StringBuilder();
+        id.append(o);
+        id.append('-');
+        id.append(t);
+        return id.toString();
+    }
+    private static int[] str2int(String s) {
+        String[] str = s.split("-");
+        int x = Integer.parseInt(str[0]);
+        int y = Integer.parseInt(str[1]);
+        return new int[]{x, y};
+    }
+}
