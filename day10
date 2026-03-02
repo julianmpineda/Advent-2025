@@ -1,0 +1,116 @@
+import java.io.*;
+import java.util.*;
+public class day10 {
+
+    private static int[] lights;
+    private static List<int[]> buttons;
+
+    public static void main(String[] args) {
+
+        List<String> machines = new ArrayList<>();
+
+        try {
+            File myObj = new File("src/data/data10.txt");
+            Scanner myReader = new Scanner(myObj);
+
+            while (myReader.hasNextLine()) {
+                machines.add(myReader.nextLine());
+            }
+
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        String mStr = machines.get(0);
+
+        lights = lightsConvert(mStr.substring(1, mStr.indexOf(" (") - 1));
+        String bStr = mStr.substring(mStr.indexOf("(") + 1, mStr.indexOf(" {") - 1);
+        buttons = buttonConvert(bStr, lights.length);
+
+        // Not used in part 1, but created since part 2 will likely use it.
+        String joltage = mStr.substring(mStr.indexOf("{"));
+
+        //System.out.println(lStr + "-|-" + bStr + "-|-" + joltage);
+
+        System.out.println(press(new int[]{0,0,0,0}, 4));
+
+        for (int r : lights) {
+            System.out.print(r);
+        } System.out.println();
+
+        System.out.println(match(new int[]{0,5,3,0}));
+        System.out.println(match(new int[]{0,5,2,0}));
+        System.out.println(match(new int[]{0,5,3,1}));
+
+    }
+
+    private static List<int[]> buttonConvert(String s, int l) {
+
+        List<int[]> buttons = new ArrayList<>();
+        String[] sSplit = s.split("\\Q) (\\E");
+
+        for (String y : sSplit) {
+            String[] temp = y.split(",");
+            int[] lights = new int[l];
+
+            for (String x : temp) {
+                int pos = Integer.parseInt(x);
+                lights[pos] = 1;
+            }
+
+            buttons.add(lights);
+        }
+
+        return buttons;
+    }
+
+    private static int[] lightsConvert(String s) {
+
+        int[] lights = new int[s.length()];
+
+        for (int i = 0; i < lights.length; i++) {
+            if (s.charAt(i) == '#') {
+                lights[i] = 1;
+            }
+        }
+
+        return lights;
+    }
+
+    private static int press(int[] prev, int button) {
+
+        int count = 0, min = Integer.MAX_VALUE;
+
+        if (match(prev)) {
+            return 0;
+        } else {
+            for (int x : buttons.get(button)) {
+                prev[x]++;
+            }
+        }
+
+        for (int i = 0; i < buttons.size(); i++) {
+            count += press(prev, i);
+            min = Math.min(Integer.MAX_VALUE, count);
+        }
+
+        return min;
+    }
+
+    private static boolean match(int[] a) {
+
+        if (a.length != lights.length) {
+            return false;
+        }
+
+        for (int i = 0; i < a.length; i++) {
+            if (a[i]%2 != lights[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+}
